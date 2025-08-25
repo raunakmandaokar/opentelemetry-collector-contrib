@@ -7,10 +7,12 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"strconv"
 	"sync"
+	"syscall"
 
 	"go.uber.org/zap"
 	"golang.org/x/text/encoding"
@@ -49,18 +51,34 @@ type messageAndAddress struct {
 	MessageLength int
 }
 
+func isNonTransientError(err error) bool {
+    // Check for common non-transient errors
+    return errors.Is(err, syscall.EACCES) || errors.Is(err, syscall.EADDRINUSE)
+}
+
 // Start will start listening for messages on a socket.
 func (i *Input) Start(_ operator.Persister) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	i.cancel = cancel
+	permissionError := false
 
 	conn, err := net.ListenUDP("udp", i.address)
 	if err != nil {
-		return fmt.Errorf("failed to open connection: %w", err)
+		var errorString string
+		if isNonTransientError(err) {
+			errorString = "Non-transient error opening UDP connection"
+			permissionError = true
+			i.Logger().Warn(errorString, zap.String("address", i.address.String()), zap.Error(err))
+		} else {
+			return fmt.Errorf("failed to open connection: %w", err)
+		}
 	}
-	i.connection = conn
+	
+	if !permissionError {
+		i.connection = conn
+		i.goHandleMessages(ctx)
+	}
 
-	i.goHandleMessages(ctx)
 	return nil
 }
 
