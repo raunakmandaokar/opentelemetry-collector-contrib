@@ -146,7 +146,8 @@ func addExpectedHistogramBuckets(metrics pmetric.MetricSlice) {
 		if math.IsInf(bound, 1) {
 			dataPoint.Attributes().PutStr(prometheusLeTag, prometheusInfValue)
 		} else {
-			dataPoint.Attributes().PutDouble(prometheusLeTag, bound)
+			// Format as string to ensure proper float representation for Prometheus v3 compatibility
+			dataPoint.Attributes().PutStr(prometheusLeTag, formatFloatWithDecimal(bound))
 		}
 
 		dataPoint.SetTimestamp(timestamp1)
@@ -172,7 +173,8 @@ func addExpectedHistogramBuckets(metrics pmetric.MetricSlice) {
 		if math.IsInf(bound, 1) {
 			dataPoint.Attributes().PutStr(prometheusLeTag, prometheusInfValue)
 		} else {
-			dataPoint.Attributes().PutDouble(prometheusLeTag, bound)
+			// Format as string to ensure proper float representation for Prometheus v3 compatibility
+			dataPoint.Attributes().PutStr(prometheusLeTag, formatFloatWithDecimal(bound))
 		}
 
 		dataPoint.SetTimestamp(timestamp2)

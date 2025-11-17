@@ -91,7 +91,8 @@ func getHistogramBucketsMetric(metric pmetric.Metric) pmetric.Metric {
 			if math.IsInf(bound, 1) {
 				bucketDataPoint.Attributes().PutStr(prometheusLeTag, prometheusInfValue)
 			} else {
-				bucketDataPoint.Attributes().PutDouble(prometheusLeTag, bound)
+				// Format as string to ensure proper float representation for Prometheus v3 compatibility
+				bucketDataPoint.Attributes().PutStr(prometheusLeTag, formatFloatWithDecimal(bound))
 			}
 
 			bucketDataPoint.SetStartTimestamp(histogramDataPoint.StartTimestamp())

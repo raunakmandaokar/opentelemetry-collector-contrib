@@ -6,6 +6,7 @@ package sumologicexporter // import "github.com/open-telemetry/opentelemetry-col
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -293,7 +294,8 @@ func (f *prometheusFormatter) summary2Strings(metric pmetric.Metric, attributes 
 		additionalAttributes := pcommon.NewMap()
 		for i := 0; i < qs.Len(); i++ {
 			q := qs.At(i)
-			additionalAttributes.PutDouble(prometheusQuantileTag, q.Quantile())
+			// Format as string to ensure proper float representation for Prometheus v3 compatibility
+			additionalAttributes.PutStr(prometheusQuantileTag, formatFloatWithDecimal(q.Quantile()))
 
 			line := f.doubleValueLine(
 				metric.Name(),
@@ -340,7 +342,8 @@ func (f *prometheusFormatter) histogram2Strings(metric pmetric.Metric, attribute
 		for i := 0; i < explicitBounds.Len(); i++ {
 			bound := explicitBounds.At(i)
 			cumulative += dp.BucketCounts().At(i)
-			additionalAttributes.PutDouble(prometheusLeTag, bound)
+			// Format as string to ensure proper float representation for Prometheus v3 compatibility
+			additionalAttributes.PutStr(prometheusLeTag, formatFloatWithDecimal(bound))
 
 			line := f.uintValueLine(
 				f.bucketMetric(metric.Name()),
@@ -402,4 +405,15 @@ func (f *prometheusFormatter) metric2String(metric pmetric.Metric, attributes pc
 		lines = f.histogram2Strings(metric, attributes)
 	}
 	return strings.Join(lines, "\n")
+}
+
+// formatFloatWithDecimal formats a float64 value as a string, ensuring decimal notation for whole numbers
+// to maintain Prometheus v3 compatibility where le and quantile values should be recognizable as floats
+func formatFloatWithDecimal(f float64) string {
+	s := strconv.FormatFloat(f, 'f', -1, 64)
+	// Ensure decimal notation for whole numbers (e.g., "1" becomes "1.0")
+	if !strings.Contains(s, ".") && !strings.Contains(s, "e") && s != "+Inf" && s != "-Inf" {
+		s += ".0"
+	}
+	return s
 }

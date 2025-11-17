@@ -125,7 +125,7 @@ func TestPrometheusMetricDataTypeHistogram(t *testing.T) {
 histogram_metric_double_test_bucket{bar="foo",le="0.2",container="dolor",branch="sumologic"} 12 1618124444169
 histogram_metric_double_test_bucket{bar="foo",le="0.5",container="dolor",branch="sumologic"} 19 1618124444169
 histogram_metric_double_test_bucket{bar="foo",le="0.8",container="dolor",branch="sumologic"} 24 1618124444169
-histogram_metric_double_test_bucket{bar="foo",le="1",container="dolor",branch="sumologic"} 32 1618124444169
+histogram_metric_double_test_bucket{bar="foo",le="1.0",container="dolor",branch="sumologic"} 32 1618124444169
 histogram_metric_double_test_bucket{bar="foo",le="+Inf",container="dolor",branch="sumologic"} 45 1618124444169
 histogram_metric_double_test_sum{bar="foo",container="dolor",branch="sumologic"} 45.6 1618124444169
 histogram_metric_double_test_count{bar="foo",container="dolor",branch="sumologic"} 7 1618124444169
@@ -133,7 +133,7 @@ histogram_metric_double_test_bucket{bar="foo",le="0.1",container="sit",branch="m
 histogram_metric_double_test_bucket{bar="foo",le="0.2",container="sit",branch="main"} 10 1608424699186
 histogram_metric_double_test_bucket{bar="foo",le="0.5",container="sit",branch="main"} 11 1608424699186
 histogram_metric_double_test_bucket{bar="foo",le="0.8",container="sit",branch="main"} 12 1608424699186
-histogram_metric_double_test_bucket{bar="foo",le="1",container="sit",branch="main"} 16 1608424699186
+histogram_metric_double_test_bucket{bar="foo",le="1.0",container="sit",branch="main"} 16 1608424699186
 histogram_metric_double_test_bucket{bar="foo",le="+Inf",container="sit",branch="main"} 22 1608424699186
 histogram_metric_double_test_sum{bar="foo",container="sit",branch="main"} 54.1 1608424699186
 histogram_metric_double_test_count{bar="foo",container="sit",branch="main"} 98 1608424699186`
